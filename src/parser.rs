@@ -23,6 +23,7 @@ struct ItemInfo {
     floatvalue: f64, // Float f64 (0-1) ==> "Wear"
     weapon_type: String, // Name of the weapon. I. E. AWP ==> "Item Name"
     item_name: String, // Name of the paint kit (skin) ==> "Paint Kit Name"
+    killeatervalue: Option<u64>, // If the item is StatTrak, this is the amount of kills- ==> StatTrak
     //wear_name: String, // Wear range (I.E. FN, WW, BS..)
     full_item_name: String, // Full name of the item (I.E. AWP | Medusa (Well-Worn)))
     stickers: Vec<Sticker> // Stickers ==> "Stickers"
@@ -61,7 +62,9 @@ struct Item {
     #[serde(rename = "Weapon ID")]
     WeaponID: usize, // The Weapon's ID. ==> defindex
 
-    Wear: f64 // The weapon's wear or float. ==> floatvalue
+    Wear: f64, // The weapon's wear or float. ==> floatvalue
+
+    StatTrak: Option<u64> // If the weapon is stattrak, this will be it's kills. ==> killeatervalue
 }
 
 impl Item {
@@ -76,7 +79,7 @@ impl Item {
         }
 
         // Convert the rest
-        Self { ItemName: from.weapon_type, PaintKit: from.paintindex, PaintKitName: from.item_name, Seed: from.paintseed, Stickers: stickers, WeaponID: from.defindex, Wear: from.floatvalue, NameTag: None }
+        Self { ItemName: from.weapon_type, PaintKit: from.paintindex, PaintKitName: from.item_name, Seed: from.paintseed, Stickers: stickers, WeaponID: from.defindex, Wear: from.floatvalue, NameTag: None, StatTrak: from.killeatervalue }
     }
 }
 
