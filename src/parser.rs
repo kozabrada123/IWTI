@@ -298,7 +298,7 @@ pub fn get_inv(profile: &String, id: &String, ilimit: usize, retry: bool, custom
         link = link.replace("%owner_steamid%", id).replace("%assetid%", &rginv.id);
 
         //println!("{}", &link);
-        println!("{} / {}, {:.3}% (Total: {}, {}%)", i, limit, (i as f32 / limit as f32) * 100 as f32, resp_json.rgInventory.len(), (i as f32 / resp_json.rgInventory.len() as f32) * 100 as f32);
+        println!("{} / {}, {:.3}% (Total: {}, {}%) (ETA: {:?})", i, limit, (i as f32 / limit as f32) * 100 as f32, resp_json.rgInventory.len(), (i as f32 / resp_json.rgInventory.len() as f32) * 100 as f32, std::time::Duration::from_secs_f64((limit - i) as f64 * 0.5));
         
         let mut data = String::new();
 
