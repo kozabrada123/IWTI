@@ -26,7 +26,8 @@ struct ItemInfo {
     killeatervalue: Option<u64>, // If the item is StatTrak, this is the amount of kills- ==> StatTrak
     //wear_name: String, // Wear range (I.E. FN, WW, BS..)
     full_item_name: String, // Full name of the item (I.E. AWP | Medusa (Well-Worn)))
-    stickers: Vec<Sticker> // Stickers ==> "Stickers"
+    stickers: Vec<Sticker>, // Stickers ==> "Stickers"
+    imageurl: String, // The image 
 }
 
 #[derive(Serialize,Deserialize, Debug)]
@@ -189,6 +190,33 @@ pub fn get_item(url: &String, name: Option<String>) -> String {
     writedata.push_str(",\n");
 
     return writedata;
+}
+
+pub fn get_item_image(url: &String) {
+
+    // Contact the api
+    let resp = reqwest::blocking::get(format!("https://api.csgofloat.com/?url={}", url)).unwrap();
+    
+    // Assuming nothing died..
+    let resp_json: serde_json::Value = serde_json::from_str(&resp.text().unwrap()).unwrap();
+
+    // Test if we errored
+    if resp_json.get("error").is_some() {
+        // We have an api error
+        println!("Api Error: {} ({}, Status: {}) [{}]", resp_json.get("error").unwrap(), resp_json.get("code").unwrap(), resp_json.get("status").unwrap(), format!("https://api.csgofloat.com/?url={}", url));
+
+    }
+
+    let item: ApiResult = serde_json::from_value(resp_json).unwrap();
+
+    // Get image
+    let mut image = std::fs::File::create(format!("{}.png", item.iteminfo.full_item_name)).unwrap();
+    reqwest::blocking::get(item.iteminfo.imageurl).unwrap().copy_to(&mut image).unwrap();
+
+    // Debug
+    println!("Got {}", item.iteminfo.full_item_name);
+
+
 }
 
 // Turns the json inventory object into a String of a lot of osiris formats

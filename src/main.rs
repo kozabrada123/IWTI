@@ -2,6 +2,8 @@ use std::{fs, env, process::exit, collections::HashMap, time::Duration, time::In
 use reqwest::ResponseBuilderExt;
 use serde_json;
 
+use crate::parser::get_item_image;
+
 mod parser;
 
 fn main() {
@@ -10,6 +12,7 @@ fn main() {
     let mut opath = "".to_string(); // The output config path
     let mut profile = "".to_string(); // The profile name with a custom link
     let mut sid = "".to_string(); // The steam id 64
+    let mut imagefile = "".to_string(); // The txt file with all the item we want images for
     let mut customlink = true; // Whether or not the user has a custom link
     let mut retry = false; // Whether or not to retry failed items
 
@@ -33,6 +36,8 @@ r#"Parameters:
         -i => Define a url inspect link of an item
         -p => Define a profile id / name
         -sid => Define a profile steam id 64
+
+        -if => Define a txt file with urls to get images from
         
         For profiles both -p and -sid are required
         
@@ -45,9 +50,16 @@ r#"Parameters:
             },
             // We have a -r
             "-r" => {retry = true;},
+
             _ => {
 
                 match prev_arg.as_str() {
+
+                    // Previous parameter was -if
+                    "-if" => {
+                        imagefile = arg.to_string();
+                    },
+
                     // Previous parameter was -i
                     "-i" => {
                         url = arg.to_string();
@@ -82,6 +94,28 @@ r#"Parameters:
     }
 
     // Check that we are good
+
+    if imagefile != "" {
+
+        // Get images from the txt 
+        
+        println!("Getting images for {}", imagefile);
+
+        let contents = fs::read_to_string(imagefile)
+        .expect("Should have been able to read the file");
+
+        let lines: Vec<&str> = contents.split("\n").collect();
+
+        // Now that we've split, get every item
+        let mut n = 0;
+        for item in &lines {
+            println!("{} / {}", n, &lines.len());
+            get_item_image(&item.to_string());
+            n += 1;
+        }
+        exit(4);
+    }
+
     if url == "" && profile == "" && sid == "" {
         println!("No url or profile set! Use -i or -p");
         exit(0);
