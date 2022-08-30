@@ -214,7 +214,7 @@ pub fn get_item_image(url: &String) {
     reqwest::blocking::get(item.iteminfo.imageurl).unwrap().copy_to(&mut image).unwrap();
 
     // Debug
-    println!("Got {}", item.iteminfo.full_item_name);
+    print!("({})", item.iteminfo.full_item_name);
 
 
 }

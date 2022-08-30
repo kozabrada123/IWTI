@@ -107,11 +107,17 @@ r#"Parameters:
         let lines: Vec<&str> = contents.split("\n").collect();
 
         // Now that we've split, get every item
-        let mut n = 0;
+        let mut n = 1;
         for item in &lines {
-            println!("{} / {}", n, &lines.len());
+
+            if item == &"" {continue;}
+
+            println!(" ");
+            print!(" {} / {} (ETA {:?}) ", n, &lines.len(), std::time::Duration::from_secs_f64((&lines.len() - n) as f64 * 0.5 ));
             get_item_image(&item.to_string());
             n += 1;
+
+            std::thread::sleep(std::time::Duration::from_secs_f32(0.5));
         }
         exit(4);
     }
